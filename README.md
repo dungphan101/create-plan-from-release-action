@@ -1,6 +1,6 @@
 # About
 
-Github action to create a release on Bytebase.
+Github action to create release from plan on Bytebase.
 
 ## Example
 
@@ -29,11 +29,19 @@ jobs:
           service-account: ${{ env.BYTEBASE_SERVICE_ACCOUNT }}
           service-account-key: ${{ secrets.BYTEBASE_PASSWORD }}
       - name: Create release
-        id: create-release
+        id: create_release
         uses: bytebase/actions-create-release@main
         with:
           url: ${{ env.BYTEBASE_URL }}
           token: ${{ steps.login.outputs.token }}
           project: ${{ env.BYTEBASE_PROJECT }}
           file-pattern: 'migrations/*.sql'
+      - name: Create plan
+        id: create_plan
+        uses: bytebase/actions-create-plan-from-release@main
+        with:
+          url: ${{ env.BYTEBASE_URL }}
+          token: ${{ steps.login.outputs.token }}
+          project: ${{ env.BYTEBASE_PROJECT }}
+          release: ${{ steps.create_release.outputs.release }}
 ```
