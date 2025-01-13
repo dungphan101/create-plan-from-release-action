@@ -1,0 +1,36 @@
+name: 'Create Plan From Release'
+description: 'Create a plan from release on Bytebase.'
+
+branding:
+  icon: 'database'
+  color: 'red'
+
+inputs:
+  url:
+    description: The bytebase URL.
+    required: true
+  token:
+    description: The Bytebase access token.
+    required: true
+  project:
+    description: 'The project on Bytebase. Format: projects/{project}'
+    required: true
+  release:
+    description:
+      'The release to create plan from. Format:
+      projects/{project}/releases/{release}'
+    required: true
+  databases:
+    description: >
+      The databases to deploy. A comma separated list of the databases. Example:
+      `instances/mysql1/databases/db1,instances/mysql1/databases/db2`. Database
+      format: instances/{instance}/databases/{database}
+    required: true
+
+outputs:
+  plan:
+    description: 'The created plan. Format: projects/{project}/plans/{plan}'
+
+runs:
+  using: node20
+  main: dist/index.js
