@@ -25687,8 +25687,8 @@ async function run() {
         const token = core.getInput('token', { required: true });
         const project = core.getInput('project', { required: true });
         const release = core.getInput('release', { required: true });
-        const databases = core.getInput('databases', { required: true });
-        const databaseList = databases.split(',');
+        const targets = core.getInput('targets', { required: true });
+        const targetList = targets.split(',');
         const c = {
             url: url,
             token: token,
@@ -25698,7 +25698,7 @@ async function run() {
                 }
             })
         };
-        const planToCreate = await previewPlan(c, project, release, databaseList);
+        const planToCreate = await previewPlan(c, project, release, targetList);
         const plan = await createPlan(c, project, planToCreate);
         core.setOutput('plan', plan);
     }
