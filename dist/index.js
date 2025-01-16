@@ -25688,10 +25688,22 @@ async function run() {
         const project = core.getInput('project', { required: true });
         const release = core.getInput('release', { required: true });
         const targets = core.getInput('targets', { required: true });
+        const checkPlan = core.getInput('check-plan');
+        let failOnWarning = false;
+        switch (checkPlan) {
+            case 'SKIP':
+                break;
+            case 'FAIL_ON_WARNING':
+                failOnWarning = true;
+                break;
+            case 'FAIL_ON_ERROR':
+                break;
+            default:
+                throw new Error(`unknown check-plan value ${checkPlan}`);
+        }
         const targetList = targets.split(',');
         const c = {
             url: url,
-            token: token,
             c: new hc.HttpClient('actions-create-plan-from-release', [], {
                 headers: {
                     authorization: `Bearer ${token}`
@@ -25700,7 +25712,13 @@ async function run() {
         };
         const planToCreate = await previewPlan(c, project, release, targetList);
         const plan = await createPlan(c, project, planToCreate);
+        core.info(`Plan created. View at ${c.url}/${plan} on Bytebase.`);
         core.setOutput('plan', plan);
+        if (checkPlan === 'SKIP') {
+            return;
+        }
+        await runPlanChecks(c, plan);
+        await waitPlanChecks(c, plan, failOnWarning);
     }
     catch (error) {
         if (error instanceof Error)
@@ -25746,6 +25764,92 @@ async function createPlan(c, project, plan) {
         throw new Error(`expect result to be not null, get ${response.result}`);
     }
     return response.result.name;
+}
+async function runPlanChecks(c, planName) {
+    const url = `${c.url}/v1/${planName}:runPlanChecks`;
+    const response = await c.c.postJson(url, {});
+    if (response.statusCode !== 200) {
+        throw new Error(`failed to run plan checks, ${response.statusCode}, ${response.result?.message}`);
+    }
+}
+async function listPlanCheckRuns(c, planName, pageToken) {
+    const url = `${c.url}/v1/${planName}/planCheckRuns?latestOnly=true&pageSize=1000&pageToken=${pageToken}`;
+    const response = await c.c.getJson(url);
+    if (response.statusCode !== 200) {
+        throw new Error(`failed to list plan check runs, ${response.statusCode}, ${response.result?.message}`);
+    }
+    return response.result;
+}
+async function listAllPlanCheckRuns(c, planName) {
+    let pageToken = '';
+    let planCheckRuns = [];
+    do {
+        let response = await listPlanCheckRuns(c, planName, pageToken);
+        planCheckRuns.push(...response.planCheckRuns);
+        pageToken = response.nextPageToken;
+    } while (pageToken !== '');
+    return planCheckRuns;
+}
+function getPlanCheckRunsResult(planCheckRuns) {
+    const status = {
+        // plan check run status
+        running: 0,
+        done: 0,
+        failed: 0,
+        canceled: 0,
+        // check result status
+        warning: 0,
+        error: 0
+    };
+    const advice = {};
+    for (const r of planCheckRuns) {
+        if (r.status === 'RUNNING') {
+            status.running++;
+        }
+        if (r.status === 'FAILED') {
+            status.failed++;
+        }
+        if (r.status === 'CANCELED') {
+            status.canceled++;
+        }
+        if (r.status === 'DONE') {
+            status.done++;
+            for (const result of r.results) {
+                if (result.status === 'ERROR') {
+                    status.error++;
+                }
+                if (result.status === 'WARNING') {
+                    status.warning++;
+                }
+            }
+        }
+    }
+    return status;
+}
+async function waitPlanChecks(c, planName, failOnWarning) {
+    for (;;) {
+        const planCheckRuns = await listAllPlanCheckRuns(c, planName);
+        const status = getPlanCheckRunsResult(planCheckRuns);
+        if (status.failed > 0) {
+            throw new Error(`Found failed plan check run. View on Bytebase.`);
+        }
+        if (status.canceled > 0) {
+            throw new Error(`Found canceled plan check run. View on Bytebase.`);
+        }
+        if (status.error > 0) {
+            throw new Error(`Plan checks report errors. View on Bytebase.`);
+        }
+        if (failOnWarning && status.warning > 0) {
+            throw new Error(`Plan checks report warnings. View on Bytebase.`);
+        }
+        if (status.running === 0) {
+            break;
+        }
+        sleep(5000);
+    }
+}
+async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 

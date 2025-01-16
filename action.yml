@@ -29,6 +29,11 @@ inputs:
       `projects/exa/databaseGroups/mygroup` Database group format:
       projects/{project}/databaseGroups/{databaseGroup}
     required: true
+  check-plan:
+    description: >
+      An enum to determine should we run plan checks and fail on warning or
+      error. Valid values are `SKIP`, `FAIL_ON_WARNING`, `FAIL_ON_ERROR`
+    default: SKIP
 
 outputs:
   plan:
