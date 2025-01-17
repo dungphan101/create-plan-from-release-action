@@ -33,7 +33,7 @@ inputs:
     description: >
       An enum to determine should we run plan checks and fail on warning or
       error. Valid values are `SKIP`, `FAIL_ON_WARNING`, `FAIL_ON_ERROR`
-    default: SKIP
+    default: FAIL_ON_ERROR
 
 outputs:
   plan:
