@@ -1,4 +1,4 @@
-name: 'Create Plan From Release'
+name: 'Bytebase Create Plan From Release'
 description: 'Create a plan from release on Bytebase.'
 
 branding:
