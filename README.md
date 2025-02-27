@@ -1,19 +1,21 @@
 # About
 
 Github action to create release from plan on Bytebase.
-  - Tutorial: [Database Release CI/CD with GitHub Actions](http://bytebase.com/docs/tutorials/github-release-cicd-workflow/)
-  - Sample repo: https://github.com/bytebase/release-cicd-workflows-example
+
+- Tutorial:
+  [Database Release CI/CD with GitHub Actions](http://bytebase.com/docs/tutorials/github-release-cicd-workflow/)
+- Sample repo: https://github.com/bytebase/release-cicd-workflows-example
 
 ## Inputs
 
-| Input Name | Description | Required | Default |
-| --- | --- | --- | --- |
-| `url` | The bytebase URL. | Yes |  |
-| `token` | The Bytebase access token. | Yes |  |
-| `project` | The project on Bytebase. Format: `projects/{project}` | Yes |  |
-| `release` | The release to create plan from. Format: `projects/{project}/releases/{release}` | Yes |  |
-| `targets` | The database group or databases to deploy. Either a comma separated list of the databases or a database group. Databases example: `instances/mysql1/databases/db1,instances/mysql1/databases/db2`. Database format: `instances/{instance}/databases/{database}` Database group example: `projects/exa/databaseGroups/mygroup` Database group format: `projects/{project}/databaseGroups/{databaseGroup}` | Yes |  |
-| `check-plan` | An enum to determine should we run plan checks and fail on warning or error. Valid values are `SKIP`, `FAIL_ON_WARNING`, `FAIL_ON_ERROR` | No | `SKIP` |
+| Input Name   | Description                                                                                                                                                                                                                                                                                                                                                                                              | Required | Default |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
+| `url`        | The bytebase URL.                                                                                                                                                                                                                                                                                                                                                                                        | Yes      |         |
+| `token`      | The Bytebase access token.                                                                                                                                                                                                                                                                                                                                                                               | Yes      |         |
+| `project`    | The project on Bytebase. Format: `projects/{project}`                                                                                                                                                                                                                                                                                                                                                    | Yes      |         |
+| `release`    | The release to create plan from. Format: `projects/{project}/releases/{release}`                                                                                                                                                                                                                                                                                                                         | Yes      |         |
+| `targets`    | The database group or databases to deploy. Either a comma separated list of the databases or a database group. Databases example: `instances/mysql1/databases/db1,instances/mysql1/databases/db2`. Database format: `instances/{instance}/databases/{database}` Database group example: `projects/exa/databaseGroups/mygroup` Database group format: `projects/{project}/databaseGroups/{databaseGroup}` | Yes      |         |
+| `check-plan` | An enum to determine should we run plan checks and fail on warning or error. Valid values are `SKIP`, `FAIL_ON_WARNING`, `FAIL_ON_ERROR`                                                                                                                                                                                                                                                                 | No       | `SKIP`  |
 
 ## Example
 

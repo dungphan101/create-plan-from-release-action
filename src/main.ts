@@ -74,8 +74,8 @@ async function previewPlan(
   const response = await c.c.postJson<{
     message: string
     plan: any
-    outOfOrderFiles: DatabaseFiles[]
-    appliedButModifiedFiles: DatabaseFiles[]
+    outOfOrderFiles?: DatabaseFiles[]
+    appliedButModifiedFiles?: DatabaseFiles[]
   }>(url, request)
 
   if (response.statusCode !== 200) {
@@ -88,12 +88,18 @@ async function previewPlan(
     throw new Error(`expect result to be not null, get ${response.result}`)
   }
 
-  if (response.result.outOfOrderFiles.length > 0) {
+  if (
+    response.result.outOfOrderFiles &&
+    response.result.outOfOrderFiles.length > 0
+  ) {
     core.warning(
       `found out of order files\n${formatDatabaseFiles(response.result.outOfOrderFiles)}`
     )
   }
-  if (response.result.appliedButModifiedFiles.length > 0) {
+  if (
+    response.result.appliedButModifiedFiles &&
+    response.result.appliedButModifiedFiles.length > 0
+  ) {
     core.warning(
       `found applied but modified files\n${formatDatabaseFiles(response.result.appliedButModifiedFiles)}`
     )
