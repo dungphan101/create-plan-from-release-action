@@ -36,6 +36,12 @@ inputs:
     default: SKIP
 
 outputs:
+  deployment-required:
+    description: >
+      Indicates whether a deployment is required due to changes detected in the
+      targets. Available values: 'true', 'false'. If 'true', new changes are
+      present and a deployment plan has been created. If 'false', no new changes
+      were found, and a deployment plan was not created.
   plan:
     description: 'The created plan. Format: projects/{project}/plans/{plan}'
 

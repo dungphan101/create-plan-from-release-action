@@ -17,6 +17,13 @@ Github action to create release from plan on Bytebase.
 | `targets`    | The database group or databases to deploy. Either a comma separated list of the databases or a database group. Databases example: `instances/mysql1/databases/db1,instances/mysql1/databases/db2`. Database format: `instances/{instance}/databases/{database}` Database group example: `projects/exa/databaseGroups/mygroup` Database group format: `projects/{project}/databaseGroups/{databaseGroup}` | Yes      |         |
 | `check-plan` | An enum to determine should we run plan checks and fail on warning or error. Valid values are `SKIP`, `FAIL_ON_WARNING`, `FAIL_ON_ERROR`                                                                                                                                                                                                                                                                 | No       | `SKIP`  |
 
+## Outputs
+
+| Output Name         | Description                                                                                                                                                                                                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| deployment-required | Indicates whether a deployment is required due to changes detected in the targets. Available values: 'true', 'false'. If 'true', new changes are present and a deployment plan has been created. If 'false', no new changes were found, and a deployment plan was not created. |
+| plan                | The created plan. Format: projects/{project}/plans/{plan}                                                                                                                                                                                                                      |
+
 ## Example
 
 ```yaml

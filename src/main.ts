@@ -31,7 +31,7 @@ export async function run(): Promise<void> {
 
     const c: httpClient = {
       url: url,
-      c: new hc.HttpClient('actions-create-plan-from-release', [], {
+      c: new hc.HttpClient('create-plan-from-release-action', [], {
         headers: {
           authorization: `Bearer ${token}`
         }
@@ -39,6 +39,22 @@ export async function run(): Promise<void> {
     }
 
     const planToCreate = await previewPlan(c, project, release, targetList)
+
+    if (
+      ((
+        planToCreate as {
+          steps: {
+            specs: {}[]
+          }[]
+        }
+      ).steps.reduce((specsCount, step) => {
+        return specsCount + step.specs.length
+      }, 0) ?? 0) === 0
+    ) {
+      core.setOutput('deployment-required', 'false')
+      return
+    }
+    core.setOutput('deployment-required', 'true')
 
     const plan = await createPlan(c, project, planToCreate)
 

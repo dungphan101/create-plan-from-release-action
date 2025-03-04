@@ -25704,13 +25704,20 @@ async function run() {
         const targetList = targets.split(',');
         const c = {
             url: url,
-            c: new hc.HttpClient('actions-create-plan-from-release', [], {
+            c: new hc.HttpClient('create-plan-from-release-action', [], {
                 headers: {
                     authorization: `Bearer ${token}`
                 }
             })
         };
         const planToCreate = await previewPlan(c, project, release, targetList);
+        if ((planToCreate.steps.reduce((specsCount, step) => {
+            return specsCount + step.specs.length;
+        }, 0) ?? 0) === 0) {
+            core.setOutput('deployment-required', 'false');
+            return;
+        }
+        core.setOutput('deployment-required', 'true');
         const plan = await createPlan(c, project, planToCreate);
         core.info(`Plan created. View at ${c.url}/${plan} on Bytebase.`);
         core.setOutput('plan', plan);
