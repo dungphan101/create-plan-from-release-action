@@ -43,12 +43,14 @@ export async function run(): Promise<void> {
     if (
       ((
         planToCreate as {
-          steps: {
-            specs: {}[]
-          }[]
+          steps:
+            | {
+                specs: {}[] | undefined
+              }[]
+            | undefined
         }
-      ).steps.reduce((specsCount, step) => {
-        return specsCount + step.specs.length
+      ).steps?.reduce((specsCount, step) => {
+        return specsCount + (step.specs?.length ?? 0)
       }, 0) ?? 0) === 0
     ) {
       core.setOutput('deployment-required', 'false')

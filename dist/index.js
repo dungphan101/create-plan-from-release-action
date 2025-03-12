@@ -25711,8 +25711,8 @@ async function run() {
             })
         };
         const planToCreate = await previewPlan(c, project, release, targetList);
-        if ((planToCreate.steps.reduce((specsCount, step) => {
-            return specsCount + step.specs.length;
+        if ((planToCreate.steps?.reduce((specsCount, step) => {
+            return specsCount + (step.specs?.length ?? 0);
         }, 0) ?? 0) === 0) {
             core.setOutput('deployment-required', 'false');
             return;
